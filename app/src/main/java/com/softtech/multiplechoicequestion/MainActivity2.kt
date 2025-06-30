@@ -2,90 +2,80 @@ package com.softtech.multiplechoicequestion
 
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.softtech.multiplechoicequestion.databinding.ActivityMain2Binding
 
 
 class MainActivity2 : AppCompatActivity() {
     lateinit var binding: ActivityMain2Binding
-    val data = dsource().qlist
-    var count = 0
-    var score = 0
+    private val vmodel: viewmodel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-         currentquiz()
+        currentquiz()
+
+        binding.click.setOnClickListener {
+
+            val sindex = binding.grp.indexOfChild(findViewById(binding.grp.checkedRadioButtonId))
+
+            vmodel.canser(sindex)
+
+            binding.grp.clearCheck()
+
+            nextquiz()
 
 
-         binding.click.setOnClickListener {
-
-             val sindex = binding.grp.indexOfChild(findViewById(binding.grp.checkedRadioButtonId))
-
-             if (sindex==data[count].correctanser){
-
-                 score++
-
-                 count++
-
-                 currentquiz()
-
-             }
-
-             else{
-
-                 count++
-
-                 currentquiz()
-
-             }
-
-
-         }
-
+        }
 
 
     }
 
+    fun nextquiz() {
+
+
+        if (vmodel.nextq()!=null){
+
+            currentquiz()
+
+        }else{
+
+            Toast.makeText(this@MainActivity2,"${vmodel.score}", Toast.LENGTH_LONG).show()
+        }
+
+
+
+
+    }
 
 
     private fun currentquiz() {
 
-        if (data.size>count){
 
-            binding.let {
 
-                data[count].apply {
+        binding.let {
 
-                    it.qstion.text = Question
+            vmodel.crntQ().apply {
 
-                    it.op.text = op1
+                it.qstion.text = this.Question
 
-                    it.op2.text = op2
+                it.op.text = this.op1
 
-                    it.op3.text = op3
+                it.op2.text = this.op2
 
-                    it.op4.text = op4
+                it.op3.text = this.op3
 
-                }
+                it.op4.text = this.op4
+
+
             }
 
-        }
-
-        else{
-
-
-            Toast.makeText(this@MainActivity2,"$score", Toast.LENGTH_LONG).show()
-
 
         }
-
-
-
 
     }
+
+
 }
